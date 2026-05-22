@@ -17,7 +17,15 @@ enemy_num = ""
 enemy_msg = ""
 stamina_num = ""
 stamina = "" 
-
+score = 0
+score_msg = ""
+win_msg = """Congratulations!
+You managed to get to 
+tile 100!"""
+lose_msg = """The enemy
+caught up to you and
+you lost!"""
+click = 0
 
 from tkinter import *
 
@@ -29,78 +37,105 @@ my_window.title("Grid Chase")
 
 # Function which happens if play button is pressed
 def play():
-    global grid_ui, grid , grid_canvas, grid_num, num , row , column, player_position , player_num , enemy_position , stamina_num  , stamina
+    global grid_ui, grid , grid_canvas, grid_num, num , row , column, player_position , player_num , enemy_position , stamina_num  , stamina, score_msg ,click
 
-    player_position = 0
-    stamina_num = 15
-    enemy_position = -1
-    stamina = f"Stamina : {stamina_num } "
-
-    # Creates individual squares 100 times
-    for i in range(100):
-        
-        # Sets the number for each square
-        num = i + 1
-
-        # Creates An individual square
-        grid_canvas = Canvas(
-        grid_frame,
-        width= 87,       
-        height= 67, 
-        bd = 8,
-        bg="white",      
-        )
-        
-        # Creates the text for the squares
-        grid_canvas.create_text(
-            25 , 25,            
-            text=str(num), 
-            font=("Arial", 12, "bold"),
-            fill="black"
-        )
-
-        # Adds each square to a list for the grid
-        grid_ui.append(grid_canvas)
-        
-        # Sets the vertical squares as multiples of 10 by not using the remainder
-        row = i // 10
-
-        # Sets each row from 1 - 9 by using the remainder
-        column = i % 10
-        
-        # using rows from 1 - 9 and columnds from 10 - 100 creates a 10x10 grid
-        grid_canvas.grid(row = row , column= column ,padx = 1 , pady = 1)
-
-
-    # Checks if the position of the player greater than or equal to 100
-    # Player position is set to 99 since lists start from 0
-    if player_position >= 99:
-        # Sets the position to square 100
-        player_position = 99
-        player_num = 100
+    click += 1
     
-    # Sets the initial square of the player grey
-    grid_ui[player_position].config(
-        bg = "grey"
+    if click >= 1:
+
+        player_position = 0
+        player_num = 1
+        stamina_num = 15
+        enemy_position = -1
+        stamina = f"Stamina : {stamina_num } "
+        score_msg = f"Score : {score}"
+        grid_ui = []
+
+        title_lbl.pack_forget()
+        play_btn.pack_forget()
+
+
+        stats_frame.pack(side="right", fill="both", expand=True)
+        grid_frame.pack(side="left", fill="y")
+        score_frame.pack(fill = "x" , pady = (10 , 0))
+        stamina_frame.pack( fill= "x" , pady = ( 10 , 0)) 
+        btn_holder.pack(fill = "x" , pady = 20)
+        score_lbl.pack(fill = "x")
+        stamina_lbl.pack(fill = "x" )
+        dice_btn.pack( side = "left" , pady = 20 , padx = 10)
+
+        # Updates window
+        my_window.update_idletasks() 
+
+        # Creates individual squares 100 times
+        for i in range(100):
+            
+            # Sets the number for each square
+            num = i + 1
+
+            # Creates An individual square
+            grid_canvas = Canvas(
+            grid_frame,
+            width= 87,       
+            height= 67, 
+            bd = 8,
+            bg="white",      
+            )
+            
+            # Creates the text for the squares
+            grid_canvas.create_text(
+                25 , 25,            
+                text=str(num), 
+                font=("Arial", 12, "bold"),
+                fill="black"
+            )
+
+            # Adds each square to a list for the grid
+            grid_ui.append(grid_canvas)
+            
+            # Sets the vertical squares as multiples of 10 by not using the remainder
+            row = i // 10
+
+            # Sets each row from 1 - 9 by using the remainder
+            column = i % 10
+            
+            # using rows from 1 - 9 and columnds from 10 - 100 creates a 10x10 grid
+            grid_canvas.grid(row = row , column= column ,padx = 1 , pady = 1)
+
+            if num % 10 == 0:
+                grid_canvas.config(
+                    bg = "yellow"
+                )
+                
+
+
+        # Checks if the position of the player greater than or equal to 100
+        # Player position is set to 99 since lists start from 0
+        if player_position >= 99:
+            # Sets the position to square 100
+            player_position = 99
+            player_num = 100
+        
+        # Sets the initial square of the player grey
+        grid_ui[player_position].config(
+            bg = "grey"
+            )
+
+        # Sets and updates the UI
+        stamina_lbl.config(
+            text = stamina
         )
 
-    # Sets and updates the UI
-    stamina_lbl.config(
-        text = stamina
-    )
+        score_lbl.config(
+            text = score_msg
+        )
 
-    title_lbl.pack_forget()
-    play_btn.pack_forget()
-    grid_frame.pack(side="left", fill="y")
-    stats_frame.pack(side="right", fill="both", expand=True)
-    stamina_frame.pack( fill= "x" , pady = 30) 
-    btn_holder.pack(fill = "x")
-    stamina_lbl.pack(fill = "x" )
-    dice_btn.pack( side = "left" , pady = 20 , padx = 10)
+
+
 
 # Function to happen when the normal dice is pressed
 def normal_dice():
-    global random_roll , place , player_position, player_num
+    global random_roll , player_position, player_num , stamina_num , score
 
 
     # Player position = actuall position -1
@@ -108,13 +143,14 @@ def normal_dice():
         grid_ui[player_position].config(
             bg = "white"
         )    
-        
+
+
         # Generates a random roll between 1 and 6
         random_roll = random.randint(1 , 6)
         
         # adds and updates the player position 
         player_position += random_roll 
-        
+     
         # Checks if the position of the player greater than or equal to 100
         # Player position is set to 99 since lists start from 0
         if player_position > 99:
@@ -123,24 +159,43 @@ def normal_dice():
 
         # Updates the number the player will see
         player_num = player_position + 1
+
+
+        if player_num % 10 == 0:
+            if player_num <= 50:
+                stamina_num += 15
+                stamina = f"Stamina : {stamina_num } "
+                stamina_lbl.config(
+                    text = stamina
+                )
+            else:
+                stamina_num += 30
+                stamina = f"Stamina : {stamina_num } "
+                stamina_lbl.config(
+                    text = stamina
+                )
     
         # Sets the tile the player is on to grey
         grid_ui[player_position].config(
             bg = "grey"
-        )  
-    
+        )
+
+        # Gives the enemy his turn
+        enemy()
+
     # Sets the player on tile 100 to avoid the player going over the 100th tile
     else:
         player_position = 99
         player_num = 100
-
-    # Gives the enemy his turn
-    enemy()
+    
+    if player_num == 100:
+        win()
+        
 
 
 # Sets the the enemy ai
 def enemy():
-    global enemy_roll  , enemy_position , player_position , enemy_num , player_num , enemy_msg
+    global enemy_roll  , enemy_position , player_position , enemy_num , player_num , enemy_msg , score
 
     # Sets the enemy message according to the number rolled and tile number he is on
     enemy_msg = f"""The enemy has 
@@ -150,7 +205,7 @@ tile {enemy_num}"""
 
 
     # Checks if the player made it to a reasonable distance to make it fair
-    if player_position > 6 and enemy_position == -1 :
+    if player_position > 2 and enemy_position == -1 :
         # Shows the enemy on the grid
         enemy_position = 0
         grid_ui[enemy_position].config(
@@ -167,10 +222,15 @@ tile {enemy_num}"""
             # Checks if the enemy can move
             if enemy_position >= 0: 
                 
-                # Sets the enemys previous square to white
-                grid_ui[enemy_position].config(
-                    bg = "white"
-                )
+                if (enemy_position +1) % 10 == 0:
+                    grid_ui[enemy_position].config(
+                    bg = "yellow"
+                    )
+                else:
+                    # Sets the enemys previous square to white
+                    grid_ui[enemy_position].config(
+                        bg = "white"
+                    )
 
                 # Creates the random roll the enemy will move
                 enemy_roll = random.randint(1 , 6)
@@ -218,7 +278,64 @@ tile {enemy_num}"""
             bg = "white"
         )
 
-        dice_btn.pack_forget()
+        lose()
+    
+    # Updates window
+    my_window.update_idletasks() 
+    
+
+
+def win():
+    global score , player_num , score_msg
+    if player_num == 100:
+        score += 100 
+        score_msg = f"Score : {score}"
+
+        score_lbl.config(
+            text = score_msg
+        )
+
+        btn_holder.pack_forget()
+        enemy_roll_lbl.pack_forget()
+        win_lbl.pack(fill = "x" , pady = 50)
+        playagn_btn.pack( pady = 100)
+        # Updates window
+        my_window.update_idletasks() 
+    
+    else:
+        return
+
+def lose():
+    btn_holder.pack_forget()
+    enemy_roll_lbl.pack_forget()
+    lose_lbl.pack(fill = "x" , pady = 50)
+    playagn_btn.pack(pady = 100)
+    
+    # Updates window
+    my_window.update_idletasks() 
+    
+
+
+def playagn():
+    global player_num , enemy_num , click
+    
+    grid_frame.pack_forget()
+    stats_frame.pack_forget()
+    score_frame.pack_forget()
+    stamina_frame.pack_forget()
+    lose_lbl.pack_forget()
+    win_lbl.pack_forget()
+    playagn_btn.pack_forget()
+
+
+    for a in (grid_ui):
+        a.destroy()
+
+
+    click = 0
+    
+    play()
+
     
 
 # Creates the title
@@ -281,12 +398,47 @@ stamina_lbl = Label(
     height= 3
 )
 
+score_frame = Frame(
+    stats_frame,
+    bg = "black"
+)
+
+score_lbl = Label(
+    score_frame,
+    text = score_msg,
+    height = 3
+)
+
+
 # Creates the label to show the enemy roll
 enemy_roll_lbl = Label(
     stats_frame,
     text = enemy_msg,
     font = ("Courier" , 25 , "bold")
 )
+
+win_lbl = Label(
+    stats_frame,
+    text = win_msg,
+    height = 8,
+    font = ("Courier", 25, "bold"),
+)
+
+lose_lbl = Label(
+    stats_frame,
+    text = lose_msg,
+    height = 8,
+    font = ("Courier", 25, "bold"),
+)
+
+playagn_btn = Button(
+    stats_frame,
+    text = " Play Again",
+    width = 30,
+    height = 2,
+    command = playagn
+)
+
 
 # Packs UI
 title_lbl.pack( pady = (150 , 0) , expand = TRUE)
