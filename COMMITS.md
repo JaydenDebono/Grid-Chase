@@ -17,3 +17,12 @@ button which allows the user to play for as long as he wants.
 
 https://github.com/JaydenDebono/Grid-Chase/raw/refs/heads/main/Grid%20Chase%20Commit%202.mov
 
+# Commit 3
+Added a roll and tile tracker for both the player and the enemy. 
+I also added 2 new dice to make the game more strategic instead of luck based :
+Target Dice : Generates a random number between 1 and 3 and makes use of 15 stamina
+Freeze Dice : Generates a random number between 1 and 6. If it is even it moves the number generated and skips an enemy turn. If odd you do not move. It uses 30 stamina
+I added short instructions saying what each button does.
+
+https://github.com/JaydenDebono/Grid-Chase/blob/f1ae2ccb52c6e1a3f3fd76292e7666ead63ada18/Grid%20Chase%20Commit%203.mov
+
